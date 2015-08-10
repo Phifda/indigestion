@@ -1,0 +1,84 @@
+{"frames": {
+
+"player.png":
+{
+	"frame": {"x":2,"y":2,"w":52,"h":1484},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":2,"w":52,"h":1484},
+	"sourceSize": {"w":56,"h":1488}
+},
+"worm-1.png":
+{
+	"frame": {"x":2,"y":1488,"w":52,"h":92},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":1,"w":52,"h":92},
+	"sourceSize": {"w":55,"h":95}
+},
+"worm-2.png":
+{
+	"frame": {"x":2,"y":1674,"w":51,"h":93},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":1,"w":51,"h":93},
+	"sourceSize": {"w":55,"h":95}
+},
+"worm-3.png":
+{
+	"frame": {"x":2,"y":1488,"w":52,"h":92},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":1,"w":52,"h":92},
+	"sourceSize": {"w":55,"h":95}
+},
+"worm-4.png":
+{
+	"frame": {"x":2,"y":1860,"w":49,"h":93},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":1,"w":49,"h":93},
+	"sourceSize": {"w":55,"h":95}
+},
+"worm-poo-1.png":
+{
+	"frame": {"x":2,"y":1582,"w":52,"h":90},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":3,"w":52,"h":90},
+	"sourceSize": {"w":55,"h":95}
+},
+"worm-poo-2.png":
+{
+	"frame": {"x":2,"y":1769,"w":51,"h":89},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":3,"w":51,"h":89},
+	"sourceSize": {"w":55,"h":95}
+},
+"worm-poo-3.png":
+{
+	"frame": {"x":2,"y":1582,"w":52,"h":90},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":3,"w":52,"h":90},
+	"sourceSize": {"w":55,"h":95}
+},
+"worm-poo-4.png":
+{
+	"frame": {"x":2,"y":1955,"w":49,"h":88},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":2,"y":1,"w":49,"h":88},
+	"sourceSize": {"w":55,"h":95}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "out.png",
+	"format": "RGBA8888",
+	"size": {"w":56,"h":2045},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:05ebb800377a162ca225c3ad661c7fd7:6d13540e1ff76084a19f38ac2f91a839:70c576c1e9fc266db7dfba4d429488ea$"
+}
+}
