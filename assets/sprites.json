@@ -1,16 +1,8 @@
 {"frames": {
 
-"Untitled.png":
-{
-	"frame": {"x":132,"y":260,"w":86,"h":123},
-	"rotated": false,
-	"trimmed": true,
-	"spriteSourceSize": {"x":7,"y":2,"w":86,"h":123},
-	"sourceSize": {"w":100,"h":128}
-},
 "alien.png":
 {
-	"frame": {"x":132,"y":260,"w":86,"h":123},
+	"frame": {"x":390,"y":174,"w":86,"h":123},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":7,"y":2,"w":86,"h":123},
@@ -18,7 +10,7 @@
 },
 "ant-1.png":
 {
-	"frame": {"x":453,"y":285,"w":49,"h":42},
+	"frame": {"x":2,"y":355,"w":49,"h":42},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":4,"w":49,"h":42},
@@ -26,7 +18,7 @@
 },
 "ant-2.png":
 {
-	"frame": {"x":347,"y":218,"w":50,"h":44},
+	"frame": {"x":129,"y":354,"w":50,"h":44},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":3,"w":50,"h":44},
@@ -34,7 +26,7 @@
 },
 "ball.png":
 {
-	"frame": {"x":295,"y":218,"w":50,"h":50},
+	"frame": {"x":77,"y":354,"w":50,"h":50},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
@@ -42,7 +34,7 @@
 },
 "blood.png":
 {
-	"frame": {"x":220,"y":355,"w":24,"h":24},
+	"frame": {"x":181,"y":355,"w":24,"h":24},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":24,"h":24},
@@ -50,11 +42,11 @@
 },
 "car.png":
 {
-	"frame": {"x":260,"y":2,"w":170,"h":214},
+	"frame": {"x":260,"y":2,"w":214,"h":170},
 	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":170,"h":214},
-	"sourceSize": {"w":170,"h":214}
+	"trimmed": true,
+	"spriteSourceSize": {"x":1,"y":1,"w":214,"h":170},
+	"sourceSize": {"w":215,"h":171}
 },
 "mars.png":
 {
@@ -66,7 +58,7 @@
 },
 "poo-1.png":
 {
-	"frame": {"x":432,"y":191,"w":55,"h":92},
+	"frame": {"x":145,"y":260,"w":55,"h":92},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":24,"y":1,"w":55,"h":92},
@@ -74,7 +66,7 @@
 },
 "poo-2.png":
 {
-	"frame": {"x":432,"y":97,"w":66,"h":92},
+	"frame": {"x":77,"y":260,"w":66,"h":92},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":18,"y":1,"w":66,"h":92},
@@ -82,7 +74,7 @@
 },
 "poo-3.png":
 {
-	"frame": {"x":220,"y":260,"w":73,"h":93},
+	"frame": {"x":390,"y":299,"w":73,"h":93},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":16,"y":1,"w":73,"h":93},
@@ -90,7 +82,7 @@
 },
 "poo-4.png":
 {
-	"frame": {"x":432,"y":2,"w":73,"h":93},
+	"frame": {"x":2,"y":260,"w":73,"h":93},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":16,"y":1,"w":73,"h":93},
@@ -98,7 +90,7 @@
 },
 "poopile.png":
 {
-	"frame": {"x":246,"y":355,"w":21,"h":22},
+	"frame": {"x":53,"y":355,"w":21,"h":22},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":1,"y":2,"w":21,"h":22},
@@ -106,7 +98,7 @@
 },
 "unreal/background.png":
 {
-	"frame": {"x":2,"y":260,"w":128,"h":128},
+	"frame": {"x":260,"y":174,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -114,7 +106,7 @@
 },
 "worm-1.png":
 {
-	"frame": {"x":295,"y":285,"w":52,"h":92},
+	"frame": {"x":255,"y":304,"w":52,"h":92},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":1,"w":52,"h":92},
@@ -122,7 +114,7 @@
 },
 "worm-2.png":
 {
-	"frame": {"x":349,"y":264,"w":51,"h":93},
+	"frame": {"x":202,"y":260,"w":51,"h":93},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":1,"w":51,"h":93},
@@ -130,7 +122,7 @@
 },
 "worm-3.png":
 {
-	"frame": {"x":295,"y":285,"w":52,"h":92},
+	"frame": {"x":255,"y":304,"w":52,"h":92},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":1,"w":52,"h":92},
@@ -138,7 +130,7 @@
 },
 "worm-4.png":
 {
-	"frame": {"x":402,"y":285,"w":49,"h":93},
+	"frame": {"x":309,"y":304,"w":49,"h":93},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":1,"w":49,"h":93},
@@ -149,8 +141,8 @@
 	"version": "1.0",
 	"image": "out.png",
 	"format": "RGBA8888",
-	"size": {"w":507,"h":390},
+	"size": {"w":478,"h":406},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:ec8d42f2106bd67eead9cf7557d59f61:79fce271d4d042e74572e06d7f507424:70c576c1e9fc266db7dfba4d429488ea$"
+	"smartupdate": "$TexturePacker:SmartUpdate:c9c8f9f35638ecde7406b7e527ef5c5e:75cebbc5f2700b0412803e790da9ba0d:70c576c1e9fc266db7dfba4d429488ea$"
 }
 }

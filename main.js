@@ -10,17 +10,14 @@ main.thegame = function(){};
 
 main.thegame.prototype = {
     preload: function() {
-        game.load.atlasJSONHash('sprites', 'assets/sprites.png', 'assets/sprites.json');
     },
 
     create: function() {
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
-        game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-        game.scale.pageAlignVertically = true;
+        game.world.setBounds(0, 0, 2000, 2000);
 
-        game.world.setBounds(0, 0, 1000, 1000);
-
+        // background
         game.add.tileSprite(0, 0, game.world.width, game.world.height, 'sprites', 'mars.png')
 
         // 'BLOOD'
@@ -46,33 +43,46 @@ main.thegame.prototype = {
         player.body.angularDrag = 500;
         player.size = 1
 
+        game.camera.follow(player);
+
         // ALIEN
         enemyBullets = game.add.group();
         enemyBullets.enableBody = true;
 
+        timer = game.time.create();
+        timer.loop(800, main.thegame.prototype.alienShoot, false)
+        timer.start(0)
+
         alien = game.add.sprite(game.world.width/2, game.world.height-258, 'sprites', 'car.png');
+        alien.health = 20;
         alien.anchor.setTo(0.5,0.5);
         game.physics.arcade.enable(alien);
         alien.body.allowRotation = true;
+        alien.angle = -90;
         alien.body.angularDrag = 500;
         alien.body.maxAngular = 100;
-        point = new Phaser.Point()
-
-        game.camera.follow(player);
+        point = new Phaser.Point();
 
         // KEYS
         space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         w = game.input.keyboard.addKey(Phaser.Keyboard.W);
-        w.onUp.add(main.thegame.prototype.stopMoving)
+        w.onUp.add(main.thegame.prototype.stopMoving);
         a = game.input.keyboard.addKey(Phaser.Keyboard.A);
         d = game.input.keyboard.addKey(Phaser.Keyboard.D);
 
-        h = game.input.keyboard.addKey(Phaser.Keyboard.H);
-        h.onDown.add(main.thegame.prototype.test)
-        n = game.input.keyboard.addKey(Phaser.Keyboard.N);
-        b = game.input.keyboard.addKey(Phaser.Keyboard.B);
+        // h = game.input.keyboard.addKey(Phaser.Keyboard.H);
+        // h.onDown.add(main.thegame.prototype.alienShoot)
+        // n = game.input.keyboard.addKey(Phaser.Keyboard.N);
+        // b = game.input.keyboard.addKey(Phaser.Keyboard.B);
 
-        for (var i=0; i<20; i++) {
+        // text
+        bossHealth = game.add.text(0, 20, "Boss Health: 20", {
+            fontSize: 36,
+            boundsAlignH: 'center'});
+        bossHealth.setTextBounds(0, 0, game.height, game.width);
+        bossHealth.fixedToCamera = true;
+
+        for (var i=0; i<25; i++) {
             main.thegame.prototype.spawnAnt();
         }
     },
@@ -82,11 +92,9 @@ main.thegame.prototype = {
         player.body.velocity.y = 0;
         player.body.angularAcceleration = 0;
         alien.body.angularAcceleration = 0;
-        player.scale.setTo(player.size, player.size)
+        player.scale.setTo(player.size, player.size);
 
         if (space.isDown) {
-            // player.body.velocity.setTo(0,0);
-
             if (!game.global.pooing) {
                 player.animations.play('poo', 1.5, false);
             }
@@ -121,8 +129,7 @@ main.thegame.prototype = {
 
         // move forward
         if (w.isDown && !space.isDown) {
-            game.physics.arcade.velocityFromAngle(player.angle-90, 100, player.body.velocity);
-            // player.animations.stop('move', resetFrame=true);
+            game.physics.arcade.velocityFromAngle(player.angle-90, 250, player.body.velocity);
             player.animations.play('move', 10, true);
         }
 
@@ -135,20 +142,44 @@ main.thegame.prototype = {
             player.body.angularAcceleration = 500;
         }
 
-        // Rotate
-        if (b.isDown) {
-            alien.body.angularAcceleration = -500;
+        // Move the alien
+        desiredRotation = game.physics.arcade.angleBetween(alien, player)*(180/Math.PI)
+
+        if (alien.body.rotation > desiredRotation+10 || alien.body.rotation < desiredRotation-10) {
+            if (Math.abs(desiredRotation - alien.body.rotation) > 180) {
+                if (desiredRotation < alien.body.rotation) {
+                    desiredRotation += 360;
+                } else {
+                    desiredRotation -= 360;
+                }
+            }
+            if (desiredRotation > alien.body.rotation) {
+                alien.body.angularVelocity = 40+(20-alien.health)*1.5;
+            } else {
+                if ( desiredRotation < alien.body.rotation) {
+                    alien.body.angularVelocity = -40-(20-alien.health)*1.5;
+                }
+            }
+            game.physics.arcade.velocityFromAngle(alien.angle, 100+((20-alien.health)*12), alien.body.velocity);
+        } else {
+            game.physics.arcade.velocityFromAngle(alien.angle, 200+((20-alien.health)*12), alien.body.velocity);
         }
 
-        if (n.isDown) {
-            alien.body.angularAcceleration = 500;
+        // Alien on player collision
+        if (Math.sqrt(Math.pow(player.x-alien.x, 2) + Math.pow(player.y-alien.y, 2)) < 95 ){
+            main.thegame.prototype.lose();
         }
+
 
         game.physics.arcade.overlap(bullets, ants, main.thegame.prototype.shotAnt, null, this);
         game.physics.arcade.overlap(enemyBullets, ants, main.thegame.prototype.shotAnt, null, this);
+        game.physics.arcade.overlap(enemyBullets, player, main.thegame.prototype.lose, null, this);
+        game.physics.arcade.overlap(bullets, alien, main.thegame.prototype.hitAlien, null, this);
 
-        ants.forEach(main.thegame.prototype.collision, this, true)
-        blood.forEachDead(main.thegame.prototype.remove, this)
+        ants.forEach(main.thegame.prototype.collision, this, true);
+        blood.forEachDead(main.thegame.prototype.remove, this);
+
+        bossHealth.text = "Boss Health: "+alien.health.toString();
     },
 
     spawnAnt: function() {
@@ -169,7 +200,7 @@ main.thegame.prototype = {
         bullet.scale.setTo(player.size*player.size, player.size*player.size);
         bullet.outOfBoundsKill = true;
         bullet.checkWorldBounds = true;
-        bullet.damage = (player.size-0.9)*10 // 1, 2, 3, 4, 5
+        bullet.damage = Math.round((player.size-0.9)*10) // 1, 2, 3, 4, 5
         game.physics.arcade.velocityFromAngle(player.angle+90, 300, bullet.body.velocity);
         player.size = 1
     },
@@ -180,11 +211,12 @@ main.thegame.prototype = {
         }
     },
 
+    // check if player hits an ant and move the ants
     collision: function(ant) {
         game.physics.arcade.velocityFromAngle(player.angle-90, 30*player.size, point);
 
-        if (Math.sqrt(Math.pow(player.x+point.x-ant.x, 2) + Math.pow(player.y+point.y-ant.y, 2)) < 15*player.size) {
-            if (player.size < 1.5) {
+        if (Math.sqrt(Math.pow(player.x+point.x-ant.x, 2) + Math.pow(player.y+point.y-ant.y, 2)) < 25*player.size) {
+            if (player.size < 1.4) {
                 player.size += 0.1;
             }
 
@@ -211,19 +243,32 @@ main.thegame.prototype = {
         ant.x = Math.random()*game.world.width;
     },
 
-    test: function() {
-        game.physics.arcade.velocityFromAngle(alien.angle-90, 500, point);
+    alienShoot: function() {
+        game.physics.arcade.velocityFromAngle(alien.angle-180, 500, point);
         enemyBullet = enemyBullets.create(alien.x+(point.x*0.2), alien.y+(point.y*0.2), 'sprites', 'ball.png');
         enemyBullet.anchor.setTo(0.5, 0.5);
         enemyBullet.scale.setTo(0.6, 0.6);
         enemyBullet.outOfBoundsKill = true;
         enemyBullet.checkWorldBounds = true;
         enemyBullet.damage = 1
-        game.physics.arcade.velocityFromAngle(alien.angle-90, 600, enemyBullet.body.velocity);
+        game.physics.arcade.velocityFromAngle(alien.angle-180, 350, enemyBullet.body.velocity);
+    },
+
+    hitAlien: function(temp, bullet) {
+        alien.health -= bullet.damage
+        bullet.kill();
+
+        if (alien.health < 1) {
+            game.state.start('Win');
+        }
     },
 
     remove: function(object) {
         object.destroy()
+    },
+
+    lose: function() {
+        game.state.start('Lose')
     }
 }
 
@@ -235,7 +280,7 @@ main.lose.prototype = {
     },
 
     create: function() {
-        game.add.tileSprite(0, 0, game.world.width, game.world.height, 'sprites', 'mars.png')
+        game.add.tileSprite(0, 0, game.width, game.height, 'sprites', 'mars.png')
 
         game.add.image(game.width-550, game.height-500, 'death')
 
@@ -259,6 +304,86 @@ main.lose.prototype = {
     }
 }
 
+main.win = function(){}; 
+
+main.win.prototype = {
+    preload: function() {
+        // game.load.image('death', 'assets/death.png'); 
+        // MAKE A WIN IMAGE
+    },
+
+    create: function() {
+        game.add.tileSprite(0, 0, game.width, game.height, 'sprites', 'mars.png')
+
+        // game.add.image(game.width-550, game.height-500, 'death')
+
+        textOne = game.add.text(0, game.height/3-128, "You Win", {
+            fontSize: 128,
+            boundsAlignH: 'center'});
+        textOne.setTextBounds(0, 0, game.height, game.width);
+
+        textTwo = game.add.text(0, game.height/3+36, "press space to restart", {
+            fontSize: 36,
+            boundsAlignH: 'center'});
+        textTwo.setTextBounds(0, 0, game.height, game.width)
+
+        space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    },
+
+    update: function() {
+        if (space.isDown) {
+            game.state.start('PlayGame')
+        }
+    }
+}
+
+main.menu = function(){}; 
+
+main.menu.prototype = {
+    preload: function() {
+        // MAKE A MENU IMAGE
+        game.load.atlasJSONHash('sprites', 'assets/sprites.png', 'assets/sprites.json');
+    },
+
+    create: function() {
+        game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+        game.scale.pageAlignVertically = true;
+
+
+        game.add.tileSprite(0, 0, game.width, game.height, 'sprites', 'mars.png') //background
+
+        textOne = game.add.text(0, game.height/3-128, "Indigestion", {
+            fontSize: 128,
+            boundsAlignH: 'center'});
+        textOne.setTextBounds(0, 0, game.height, game.width);
+
+        textTwo = game.add.text(0, game.height/2-20, "use WASD to move", {
+            fontSize: 36,
+            boundsAlignH: 'center'});
+        textTwo.setTextBounds(0, 0, game.height, game.width)
+
+        textThree = game.add.text(0, game.height/2+20, "use SPACE to shoot", {
+            fontSize: 36,
+            boundsAlignH: 'center'});
+        textThree.setTextBounds(0, 0, game.height, game.width)
+
+        textFour = game.add.text(0, (game.height/4)*3, "press space to play", {
+            fontSize: 36,
+            boundsAlignH: 'center'});
+        textFour.setTextBounds(0, 0, game.height, game.width)
+
+        space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    },
+
+    update: function() {
+        if (space.isDown) {
+            game.state.start('PlayGame')
+        }
+    }
+}
+
 game.state.add('PlayGame', main.thegame);
 game.state.add('Lose', main.lose);
-game.state.start('PlayGame');
+game.state.add('Win', main.win);
+game.state.add('Menu', main.menu);
+game.state.start('Menu');
