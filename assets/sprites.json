@@ -2,7 +2,7 @@
 
 "alien.png":
 {
-	"frame": {"x":260,"y":132,"w":86,"h":123},
+	"frame": {"x":380,"y":378,"w":86,"h":123},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":7,"y":2,"w":86,"h":123},
@@ -10,7 +10,7 @@
 },
 "ant-1.png":
 {
-	"frame": {"x":293,"y":372,"w":49,"h":42},
+	"frame": {"x":526,"y":96,"w":49,"h":42},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":4,"w":49,"h":42},
@@ -18,7 +18,7 @@
 },
 "ant-2.png":
 {
-	"frame": {"x":293,"y":326,"w":50,"h":44},
+	"frame": {"x":536,"y":430,"w":50,"h":44},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":0,"y":3,"w":50,"h":44},
@@ -26,7 +26,7 @@
 },
 "ball.png":
 {
-	"frame": {"x":218,"y":421,"w":50,"h":50},
+	"frame": {"x":536,"y":378,"w":50,"h":50},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":50},
@@ -34,7 +34,7 @@
 },
 "beam.png":
 {
-	"frame": {"x":2,"y":260,"w":376,"h":64},
+	"frame": {"x":2,"y":432,"w":376,"h":64},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":376,"h":64},
@@ -42,7 +42,7 @@
 },
 "blood.png":
 {
-	"frame": {"x":390,"y":97,"w":24,"h":24},
+	"frame": {"x":468,"y":472,"w":24,"h":24},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":24,"h":24},
@@ -50,11 +50,35 @@
 },
 "car.png":
 {
-	"frame": {"x":2,"y":326,"w":214,"h":170},
+	"frame": {"x":2,"y":260,"w":214,"h":170},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":1,"y":1,"w":214,"h":170},
 	"sourceSize": {"w":215,"h":171}
+},
+"chicken-2.png":
+{
+	"frame": {"x":260,"y":2,"w":127,"h":198},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":127,"h":198},
+	"sourceSize": {"w":127,"h":198}
+},
+"chicken-3.png":
+{
+	"frame": {"x":389,"y":2,"w":135,"h":184},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":135,"h":184},
+	"sourceSize": {"w":135,"h":184}
+},
+"chicken-1.png":
+{
+	"frame": {"x":390,"y":188,"w":121,"h":188},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":121,"h":188},
+	"sourceSize": {"w":121,"h":188}
 },
 "mars.png":
 {
@@ -66,7 +90,7 @@
 },
 "poo-1.png":
 {
-	"frame": {"x":380,"y":322,"w":55,"h":92},
+	"frame": {"x":526,"y":2,"w":55,"h":92},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":24,"y":1,"w":55,"h":92},
@@ -74,7 +98,7 @@
 },
 "poo-2.png":
 {
-	"frame": {"x":293,"y":416,"w":66,"h":92},
+	"frame": {"x":468,"y":378,"w":66,"h":92},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":18,"y":1,"w":66,"h":92},
@@ -82,7 +106,7 @@
 },
 "poo-3.png":
 {
-	"frame": {"x":348,"y":132,"w":73,"h":93},
+	"frame": {"x":513,"y":188,"w":73,"h":93},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":16,"y":1,"w":73,"h":93},
@@ -90,7 +114,7 @@
 },
 "poo-4.png":
 {
-	"frame": {"x":218,"y":326,"w":73,"h":93},
+	"frame": {"x":513,"y":283,"w":73,"h":93},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":16,"y":1,"w":73,"h":93},
@@ -98,7 +122,7 @@
 },
 "poopile.png":
 {
-	"frame": {"x":416,"y":97,"w":21,"h":22},
+	"frame": {"x":218,"y":260,"w":21,"h":22},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":1,"y":2,"w":21,"h":22},
@@ -106,7 +130,7 @@
 },
 "unreal/background.png":
 {
-	"frame": {"x":260,"y":2,"w":128,"h":128},
+	"frame": {"x":260,"y":202,"w":128,"h":128},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":128,"h":128},
@@ -114,7 +138,7 @@
 },
 "worm-1.png":
 {
-	"frame": {"x":361,"y":416,"w":52,"h":92},
+	"frame": {"x":218,"y":332,"w":52,"h":92},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":1,"w":52,"h":92},
@@ -122,7 +146,7 @@
 },
 "worm-2.png":
 {
-	"frame": {"x":380,"y":227,"w":51,"h":93},
+	"frame": {"x":272,"y":332,"w":51,"h":93},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":1,"w":51,"h":93},
@@ -130,7 +154,7 @@
 },
 "worm-3.png":
 {
-	"frame": {"x":361,"y":416,"w":52,"h":92},
+	"frame": {"x":218,"y":332,"w":52,"h":92},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":1,"w":52,"h":92},
@@ -138,7 +162,7 @@
 },
 "worm-4.png":
 {
-	"frame": {"x":390,"y":2,"w":49,"h":93},
+	"frame": {"x":325,"y":332,"w":49,"h":93},
 	"rotated": false,
 	"trimmed": true,
 	"spriteSourceSize": {"x":2,"y":1,"w":49,"h":93},
@@ -149,8 +173,8 @@
 	"version": "1.0",
 	"image": "out.png",
 	"format": "RGBA8888",
-	"size": {"w":441,"h":510},
+	"size": {"w":588,"h":503},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:3d4c8cfcd6703fc24e4213af8c127783:9f4a698a2534b465d03853fa5a7b31a6:70c576c1e9fc266db7dfba4d429488ea$"
+	"smartupdate": "$TexturePacker:SmartUpdate:8debe214313fb0087246842de6e0f371:656fdeabfd06a736e53f686f18660a1f:70c576c1e9fc266db7dfba4d429488ea$"
 }
 }

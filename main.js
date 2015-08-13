@@ -1,4 +1,4 @@
-var game = new Phaser.Game(1024, 768, Phaser.CANVAS);
+var game = new Phaser.Game(1024, 768, Phaser.AUTO);
 
 main = {};
 main.waves = [];
@@ -11,7 +11,7 @@ game.wave = 0
 
 game.nextWave = function() {
     game.wave += 1
-    if (game.wave > 2) {
+    if (game.wave > 4) {
         game.state.start('Win')
     } else {
         game.state.add('Wave'+game.wave.toString(), main.waves[game.wave])
@@ -159,7 +159,6 @@ main.updateAlienBeam = function(alienBeam) {
     game.physics.arcade.velocityFromAngle(player.angle-90, 40, pointTwo);
     linetwo = new Phaser.Line(player.x+pointTwo.x, player.y+pointTwo.y, player.x-pointTwo.x, player.y-pointTwo.y);
     if (line.intersects(linetwo)){
-        console.log('poo')
         main.lose();
     }
     game.physics.arcade.velocityFromAngle(player.angle, 20, pointTwo);
@@ -181,7 +180,7 @@ main.updateAlienBeam = function(alienBeam) {
 
     if (alienBeam.health < 1) {
         alienBeam.destroy()
-        if (beams.total < 1) {
+        if (beams.total < 1 && game.wave != 4) {
             game.nextWave();
         }
     }
@@ -248,14 +247,52 @@ main.hitAlien = function(temp, bullet) {
     alien.health -= bullet.damage
     bullet.kill();
 
-    if (alien.health < 1) {
-        game.state.start('Win');
-        // CHANGE THIS?
+    if (alien.health < 1 && game.wave != 4) {
+        game.nextWave();
+    }
+}
+
+main.updateChickens = function(chicken) {
+    there = false;
+
+    if (chicken.x > chicken.destonation.x - 100 && chicken.x < chicken.destonation.x + 100) {
+        if (chicken.y > chicken.destonation.y - 100 && chicken.y < chicken.destonation.y + 100) {
+            there = true;
+        }
+    }
+
+    if (there) {
+        chicken.destonation.x = game.rnd.integerInRange(0, game.world.width)
+        chicken.destonation.y = game.rnd.integerInRange(0, game.world.height)
+
+        chicken.body.acceleration.x = -(chicken.x - chicken.destonation.x)/5;
+        chicken.body.acceleration.y = -(chicken.y - chicken.destonation.y)/5;
+    }
+
+    chicken.body.acceleration.x = -(chicken.x - chicken.destonation.x)/5;
+    chicken.body.acceleration.y = -(chicken.y - chicken.destonation.y)/5;
+
+    if (Math.sqrt(Math.pow(player.x-chicken.x, 2) + Math.pow(player.y-chicken.y, 2)) < 120 ){
+        main.lose();
+    }
+}
+
+main.shotChicken = function(bullet, chicken) {
+    if (bullet.damage == 5) {
+        chicken.destroy();
+    } else if (bullet.damage > 2) {
+        chicken.destroy();
+        bullet.kill();
+    } else {
+        bullet.kill();
+    }
+    if (chickens.total == 0 && game.wave != 4) {
+        game.nextWave();
     }
 }
 
 main.remove = function(object) {
-    object.destroy()
+    object.destroy();
 }
 
 main.lose = function() {
@@ -267,17 +304,179 @@ main.lose = function() {
 //  WAVE ONE
 // ------------------------------------------------------------------
 
-
-main.waves[1] = function(){};
-
+main.waves[1] = function() {};
 main.waves[1].prototype = {
+
+    preload: function() {},
+
+    create: function() {
+        game.physics.startSystem(Phaser.Physics.ARCADE);
+
+        game.world.setBounds(0, 0, 1500, 1500);
+
+        // background
+        game.add.tileSprite(0, 0, game.world.width, game.world.height, 'sprites', 'mars.png')
+
+        // 'BLOOD'
+        blood = game.add.group();
+        // main.blood.classType = Phaser.Image
+
+        // 'ANTS'
+        ants = game.add.group();
+        ants.enableBody = true;
+
+        // 'BULLETS'
+        bullets = game.add.group();
+        bullets.enableBody = true;
+        
+
+        // CREATE THE PLAYER
+        player = game.add.sprite(game.world.width/2, game.world.height/2, 'sprites', 'worm-1.png');
+        player.animations.add("move", Phaser.Animation.generateFrameNames('worm-', 1, 4, '.png', 1));
+        player.animations.add("poo", Phaser.Animation.generateFrameNames('poo-', 1, 4, '.png', 1));
+        game.physics.arcade.enable(player);
+        player.anchor.setTo(0.5,0.5);
+        player.body.allowRotation = true;
+        player.body.maxAngular = 100;
+        player.body.angularDrag = 500;
+        player.size = 1;
+
+        chickens = game.add.group();
+        chickens.enableBody = true;
+
+        // Spawn chickens
+        for (i=1; i<4; i++) {
+            chicken = chickens.create(game.world.width/2, game.world.height/2, "sprites", "chicken-1.png");
+            game.physics.arcade.enable(chicken);
+            chicken.animations.add("move", Phaser.Animation.generateFrameNames("chicken-", 1, 3, ".png", 1));
+            chicken.animations.play("move", 10, true);
+            chicken.anchor.setTo(0.5,0.5);
+            chicken.body.maxVelocity.set(100);
+            chicken.body.drag.set(500);
+            while (true) {
+                chicken.x = game.rnd.integerInRange(0, game.world.width);
+                chicken.y = game.rnd.integerInRange(0, game.world.height);
+                if (chicken.x < player.x - 500 || chicken.x > player.x + 500) {
+                    break;
+                } else if (chicken.y < player.y - 500 || chicken.y > player.y + 500) {
+                    break;
+                }
+            }
+            chicken.destonation = new Phaser.Point();
+            chicken.destonation.x = chicken.x;
+            chicken.destonation.y = chicken.y;
+        }
+
+        game.camera.follow(player);
+
+        point = new Phaser.Point();
+
+        // KEYS
+        space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        w = game.input.keyboard.addKey(Phaser.Keyboard.W);
+        w.onUp.add(main.stopMoving);
+        a = game.input.keyboard.addKey(Phaser.Keyboard.A);
+        d = game.input.keyboard.addKey(Phaser.Keyboard.D);
+
+        k = game.input.keyboard.addKey(Phaser.Keyboard.K);
+        k.onUp.add(game.nextWave);
+
+        game.graphics = game.add.graphics()
+
+        // text
+        bossHealth = game.add.text(0, 20, "", {
+            fontSize: 36,
+            boundsAlignH: 'center'});
+        bossHealth.setTextBounds(0, 0, game.width, game.height);
+        bossHealth.fixedToCamera = true;
+
+        for (var i=0; i<25; i++) {
+            main.spawnAnt();
+        }
+    },
+
+    update: function() {
+        player.body.velocity.x = 0;
+        player.body.velocity.y = 0;
+        player.body.angularAcceleration = 0;
+        player.scale.setTo(player.size, player.size);
+
+        if (space.isDown) {
+            if (!game.global.pooing) {
+                player.animations.play('poo', 1.5, false);
+            }
+
+            game.global.pooing = true
+        } else if (game.global.pooing) {
+            if (player.animations.currentAnim._frameIndex == 3) {
+                main.shoot();
+            }
+            game.global.pooing = false;
+            player.animations.play('move', 0, true);
+            player.animations.stop();
+        }
+
+        // player collide with world boundries
+        game.physics.arcade.velocityFromAngle(player.angle-90, 40*player.size, point);
+
+        if (player.x+point.x < 0) {
+            player.body.velocity.x = 0;
+            player.x = 0-point.x;
+        } else if (player.x+point.x > game.world.height) {
+            player.body.velocity.x = 0;
+            player.x = game.world.height-point.x;
+        }
+        if (player.y+point.y < 0) {
+            player.body.velocity.y = 0;
+            player.y = 0-point.y;
+        } else if (player.y+point.y > game.world.height) {
+            player.body.velocity.y = 0;
+            player.y = game.world.height-point.y;
+        }
+
+        // move forward
+        if (w.isDown && !space.isDown) {
+            game.physics.arcade.velocityFromAngle(player.angle-90, 250, player.body.velocity);
+            player.animations.play('move', 10, true);
+        }
+
+        // Rotate
+        if (a.isDown) {
+            player.body.angularAcceleration = -500;
+        }
+
+        if (d.isDown) {
+            player.body.angularAcceleration = 500;
+        }
+
+        game.physics.arcade.overlap(bullets, ants, main.shotAnt, null, this);
+        game.physics.arcade.overlap(bullets, chickens, main.shotChicken, null, this);
+
+        ants.forEach(main.collision, this, true);
+        blood.forEachDead(main.remove, this);
+
+        chickens.forEach(main.updateChickens, this, true)
+
+        bossHealth.text = chickens.total.toString()+" Aliens Left"
+    }
+}
+
+
+// ------------------------------------------------------------------
+//  WAVE TWO
+// ------------------------------------------------------------------
+
+
+main.waves[2] = function(){};
+
+main.waves[2].prototype = {
     preload: function() {
     },
 
     create: function() {
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
-        game.world.setBounds(0, 0, 2000, 2000);
+        game.world.setBounds(0, 0, 1500, 1500);
 
         // background
         game.add.tileSprite(0, 0, game.world.width, game.world.height, 'sprites', 'mars.png')
@@ -306,10 +505,6 @@ main.waves[1].prototype = {
         player.size = 1
 
         game.camera.follow(player);
-
-        // Enemy Bullets
-        enemyBullets = game.add.group();
-        enemyBullets.enableBody = true;
 
         // alien beams
         beams = game.add.group();
@@ -402,31 +597,31 @@ main.waves[1].prototype = {
 
 
         game.physics.arcade.overlap(bullets, ants, main.shotAnt, null, this);
-        game.physics.arcade.overlap(enemyBullets, ants, main.shotAnt, null, this);
-        game.physics.arcade.overlap(enemyBullets, player, main.lose, null, this);
 
         ants.forEach(main.collision, this, true);
         blood.forEachDead(main.remove, this);
         beams.forEach(main.updateAlienBeam, this);
+
+        bossHealth.text = beams.total.toString()+" Beams Left"
     }
 }
 
 
 // ------------------------------------------------------------------
-//  WAVE TWO
+//  WAVE THREE
 // ------------------------------------------------------------------
 
 
-main.waves[2] = function(){};
+main.waves[3] = function(){};
 
-main.waves[2].prototype = {
+main.waves[3].prototype = {
     preload: function() {
     },
 
     create: function() {
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
-        game.world.setBounds(0, 0, 2000, 2000);
+        game.world.setBounds(0, 0, 1500, 1500);
 
         timer = game.time.create();
         timer.loop(800, main.alienShoot, false)
@@ -458,6 +653,9 @@ main.waves[2].prototype = {
         player.body.angularDrag = 500;
         player.size = 1
 
+        point = new Phaser.Point();
+        pointTwo = new Phaser.Point();
+
         game.camera.follow(player);
 
         // Enemy Bullets
@@ -467,9 +665,6 @@ main.waves[2].prototype = {
         // ALIENS
         aliens = game.add.group();
         aliens.enableBody = true;
-
-        point = new Phaser.Point();
-        pointTwo = new Phaser.Point();
 
         // KEYS
         space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -559,6 +754,198 @@ main.waves[2].prototype = {
         ants.forEach(main.collision, this, true);
         blood.forEachDead(main.remove, this);
         aliens.forEach(main.updateAlienCar, this);
+    }
+}
+
+
+// ------------------------------------------------------------------
+//  WAVE FOUR
+// ------------------------------------------------------------------
+
+
+main.waves[4] = function(){};
+
+main.waves[4].prototype = {
+    preload: function() {
+    },
+
+    create: function() {
+        game.physics.startSystem(Phaser.Physics.ARCADE);
+
+        game.world.setBounds(0, 0, 1500, 1500);
+
+        timer = game.time.create();
+        timer.loop(800, main.alienShoot, false)
+        timer.start(0)
+
+        // background
+        game.add.tileSprite(0, 0, game.world.width, game.world.height, 'sprites', 'mars.png')
+
+        // 'BLOOD'
+        blood = game.add.group();
+        // blood.classType = Phaser.Image
+
+        // 'ANTS'
+        ants = game.add.group();
+        ants.enableBody = true;
+
+        // 'BULLETS'
+        bullets = game.add.group();
+        bullets.enableBody = true;
+
+        // CREATE THE PLAYER
+        player = game.add.sprite(game.world.width/2, game.world.height/2, 'sprites', 'worm-1.png');
+        player.animations.add("move", Phaser.Animation.generateFrameNames('worm-', 1, 4, '.png', 1))
+        player.animations.add("poo", Phaser.Animation.generateFrameNames('poo-', 1, 4, '.png', 1))
+        game.physics.arcade.enable(player);
+        player.anchor.setTo(0.5,0.5);
+        player.body.allowRotation = true;
+        player.body.maxAngular = 100;
+        player.body.angularDrag = 500;
+        player.size = 1
+
+        game.camera.follow(player);
+
+        // Enemy Bullets
+        enemyBullets = game.add.group();
+        enemyBullets.enableBody = true;
+
+        chickens = game.add.group();
+        chickens.enableBody = true;
+
+        // Spawn chickens
+        for (i=1; i<2; i++) {
+            chicken = chickens.create(game.world.width/2, game.world.height/2, "sprites", "chicken-1.png");
+            game.physics.arcade.enable(chicken);
+            chicken.animations.add("move", Phaser.Animation.generateFrameNames("chicken-", 1, 3, ".png", 1));
+            chicken.animations.play("move", 10, true);
+            chicken.anchor.setTo(0.5,0.5);
+            chicken.body.maxVelocity.set(100);
+            chicken.body.drag.set(500);
+            while (true) {
+                chicken.x = game.rnd.integerInRange(0, game.world.width);
+                chicken.y = game.rnd.integerInRange(0, game.world.height);
+                if (chicken.x < player.x - 500 || chicken.x > player.x + 500) {
+                    break;
+                } else if (chicken.y < player.y - 500 || chicken.y > player.y + 500) {
+                    break;
+                }
+            }
+            chicken.destonation = new Phaser.Point();
+            chicken.destonation.x = chicken.x;
+            chicken.destonation.y = chicken.y;
+        }
+
+        // ALIENS
+        aliens = game.add.group();
+        aliens.enableBody = true;
+
+        // alien beams
+        beams = game.add.group();
+        beams.enableBody = true;
+
+        point = new Phaser.Point();
+
+        // KEYS
+        space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        w = game.input.keyboard.addKey(Phaser.Keyboard.W);
+        w.onUp.add(main.stopMoving);
+        a = game.input.keyboard.addKey(Phaser.Keyboard.A);
+        d = game.input.keyboard.addKey(Phaser.Keyboard.D);
+
+        k = game.input.keyboard.addKey(Phaser.Keyboard.K);
+        k.onUp.add(game.nextWave);
+
+        game.graphics = game.add.graphics()
+
+        // text
+        bossHealth = game.add.text(0, 20, "", {
+            fontSize: 36,
+            boundsAlignH: 'center'});
+        bossHealth.setTextBounds(0, 0, game.width, game.height);
+        bossHealth.fixedToCamera = true;
+
+        for (var i=0; i<25; i++) {
+            main.spawnAnt();
+        }
+
+        main.createAlienCar(game.world.width/2, game.world.height-258);
+
+        main.createAlienBeam(game.world.width/2, 258);
+    },
+
+    update: function() {
+        player.body.velocity.x = 0;
+        player.body.velocity.y = 0;
+        player.body.angularAcceleration = 0;
+        player.scale.setTo(player.size, player.size);
+
+        if (space.isDown) {
+            if (!game.global.pooing) {
+                player.animations.play('poo', 1.5, false);
+            }
+
+            game.global.pooing = true
+        } else if (game.global.pooing) {
+            if (player.animations.currentAnim._frameIndex == 3) {
+                main.shoot();
+            }
+            game.global.pooing = false;
+            player.animations.play('move', 0, true);
+            player.animations.stop();
+        }
+
+        // player collide with world boundries
+        game.physics.arcade.velocityFromAngle(player.angle-90, 40*player.size, point);
+
+        if (player.x+point.x < 0) {
+            player.body.velocity.x = 0;
+            player.x = 0-point.x;
+        } else if (player.x+point.x > game.world.height) {
+            player.body.velocity.x = 0;
+            player.x = game.world.height-point.x;
+        }
+        if (player.y+point.y < 0) {
+            player.body.velocity.y = 0;
+            player.y = 0-point.y;
+        } else if (player.y+point.y > game.world.height) {
+            player.body.velocity.y = 0;
+            player.y = game.world.height-point.y;
+        }
+
+        // move forward
+        if (w.isDown && !space.isDown) {
+            game.physics.arcade.velocityFromAngle(player.angle-90, 250, player.body.velocity);
+            player.animations.play('move', 10, true);
+        }
+
+        // Rotate
+        if (a.isDown) {
+            player.body.angularAcceleration = -500;
+        }
+
+        if (d.isDown) {
+            player.body.angularAcceleration = 500;
+        }
+
+
+        game.physics.arcade.overlap(bullets, ants, main.shotAnt, null, this);
+        game.physics.arcade.overlap(enemyBullets, ants, main.shotAnt, null, this);
+        game.physics.arcade.overlap(enemyBullets, player, main.lose, null, this);
+        game.physics.arcade.overlap(bullets, chickens, main.shotChicken, null, this);
+
+        ants.forEach(main.collision, this, true);
+        blood.forEachDead(main.remove, this);
+        aliens.forEach(main.updateAlienCar, this);
+        chickens.forEach(main.updateChickens, this, true)
+        beams.forEach(main.updateAlienBeam, this);
+
+        enemies = aliens.total+beams.total+chickens.total;
+        bossHealth.text = enemies.toString()+" Enemies Left";
+
+        if (aliens.total == 0 && beams.total == 0 && chickens.total == 0) {
+            game.nextWave();
+        }
     }
 }
 
@@ -654,15 +1041,25 @@ main.menu.prototype = {
             boundsAlignH: 'center'});
         textTwo.setTextBounds(0, 0, game.width, game.height)
 
-        textThree = game.add.text(0, game.height/2+20, "use SPACE to shoot", {
+        textThree = game.add.text(0, game.height/2+20, "hold SPACE to shoot", {
             fontSize: 36,
             boundsAlignH: 'center'});
         textThree.setTextBounds(0, 0, game.width, game.height)
 
-        textFour = game.add.text(0, (game.height/4)*3, "press space to play", {
+        textFour = game.add.text(0, game.height/2+60, "eat bugs to power up", {
             fontSize: 36,
             boundsAlignH: 'center'});
         textFour.setTextBounds(0, 0, game.width, game.height)
+
+        textFive = game.add.text(0, game.height/2+100, "try to beat all four waves", {
+            fontSize: 36,
+            boundsAlignH: 'center'});
+        textFive.setTextBounds(0, 0, game.width, game.height)
+
+        textSix = game.add.text(0, (game.height/4)*3+30, "press space to play", {
+            fontSize: 36,
+            boundsAlignH: 'center'});
+        textSix.setTextBounds(0, 0, game.width, game.height)
 
         space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     },
