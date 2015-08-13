@@ -10,13 +10,21 @@ game.global = {
 game.wave = 0
 
 game.nextWave = function() {
-    game.wave += 1
-    if (game.wave > 4) {
-        game.state.start('Win')
+    if (game.wave < 4) {
+        game.state.start('WaveTransition')
     } else {
-        game.state.add('Wave'+game.wave.toString(), main.waves[game.wave])
-        game.state.start('Wave'+game.wave.toString())
+        game.state.start('Win')
     }
+}
+
+game.playNextWave = function() {
+    game.wave += 1
+    game.state.add('Wave'+game.wave.toString(), main.waves[game.wave])
+    game.state.start('Wave'+game.wave.toString())
+}
+
+main.randomTip = function() {
+    return tips[game.rnd.integerInRange(0, tips.length-1)];
 }
 
 main.spawnAnt = function() {
@@ -198,38 +206,38 @@ main.createAlienCar = function(x, y) {
 }
 
 
-main.updateAlienCar = function(alien) {
+main.updateAlienCar = function(theAlien) {
     // Move the alien
-    desiredRotation = game.physics.arcade.angleBetween(alien, player)*(180/Math.PI)
+    desiredRotation = game.physics.arcade.angleBetween(theAlien, player)*(180/Math.PI)
 
-    if (alien.body.rotation > desiredRotation+10 || alien.body.rotation < desiredRotation-10) {
-        if (Math.abs(desiredRotation - alien.body.rotation) > 180) {
-            if (desiredRotation < alien.body.rotation) {
+    if (theAlien.body.rotation > desiredRotation+10 || theAlien.body.rotation < desiredRotation-10) {
+        if (Math.abs(desiredRotation - theAlien.body.rotation) > 180) {
+            if (desiredRotation < theAlien.body.rotation) {
                 desiredRotation += 360;
             } else {
                 desiredRotation -= 360;
             }
         }
-        if (desiredRotation > alien.body.rotation) {
-            alien.body.angularVelocity = 40+(20-alien.health)*1.5;
+        if (desiredRotation > theAlien.body.rotation) {
+            theAlien.body.angularVelocity = 40+(20-theAlien.health)*1.5;
         } else {
-            if ( desiredRotation < alien.body.rotation) {
-                alien.body.angularVelocity = -40-(20-alien.health)*1.5;
+            if ( desiredRotation < theAlien.body.rotation) {
+                theAlien.body.angularVelocity = -40-(20-theAlien.health)*1.5;
             }
         }
-        game.physics.arcade.velocityFromAngle(alien.angle, 100+((20-alien.health)*12), alien.body.velocity);
+        game.physics.arcade.velocityFromAngle(theAlien.angle, 100+((20-theAlien.health)*12), theAlien.body.velocity);
     } else {
-        game.physics.arcade.velocityFromAngle(alien.angle, 200+((20-alien.health)*12), alien.body.velocity);
+        game.physics.arcade.velocityFromAngle(theAlien.angle, 200+((20-theAlien.health)*12), theAlien.body.velocity);
     }
 
     // Alien on player collision
-    if (Math.sqrt(Math.pow(player.x-alien.x, 2) + Math.pow(player.y-alien.y, 2)) < 95 ){
+    if (Math.sqrt(Math.pow(player.x-theAlien.x, 2) + Math.pow(player.y-theAlien.y, 2)) < 95 ){
         main.lose();
     }
 
-    game.physics.arcade.overlap(bullets, alien, main.hitAlien, null, this);
+    game.physics.arcade.overlap(bullets, theAlien, main.hitAlien, null, this);
 
-    bossHealth.text = "Boss Health: "+alien.health.toString();
+    bossHealth.text = "Car Health: "+theAlien.health.toString();
 }
 
 main.alienShoot = function() {
@@ -243,12 +251,15 @@ main.alienShoot = function() {
     game.physics.arcade.velocityFromAngle(alien.angle-180, 400, bullet.body.velocity);
 }
 
-main.hitAlien = function(temp, bullet) {
-    alien.health -= bullet.damage
+main.hitAlien = function(alien, bullet) {
+    alien = aliens.getFirstAlive();
+    alien.health -= bullet.damage;
     bullet.kill();
 
-    if (alien.health < 1 && game.wave != 4) {
-        game.nextWave();
+    if (alien.health < 1) {
+        alienShooting.stop();
+        alien.kill();
+        alien.destroy();
     }
 }
 
@@ -623,9 +634,9 @@ main.waves[3].prototype = {
 
         game.world.setBounds(0, 0, 1500, 1500);
 
-        timer = game.time.create();
-        timer.loop(800, main.alienShoot, false)
-        timer.start(0)
+        alienShooting = game.time.create();
+        alienShooting.loop(800, main.alienShoot, false)
+        alienShooting.start(0)
 
         // background
         game.add.tileSprite(0, 0, game.world.width, game.world.height, 'sprites', 'mars.png')
@@ -754,6 +765,10 @@ main.waves[3].prototype = {
         ants.forEach(main.collision, this, true);
         blood.forEachDead(main.remove, this);
         aliens.forEach(main.updateAlienCar, this);
+
+        // if (aliens.total == 0) {
+        //     game.nextWave();
+        // }
     }
 }
 
@@ -774,9 +789,9 @@ main.waves[4].prototype = {
 
         game.world.setBounds(0, 0, 1500, 1500);
 
-        timer = game.time.create();
-        timer.loop(800, main.alienShoot, false)
-        timer.start(0)
+        alienShooting = game.time.create();
+        alienShooting.loop(800, main.alienShoot, false)
+        alienShooting.start(0)
 
         // background
         game.add.tileSprite(0, 0, game.world.width, game.world.height, 'sprites', 'mars.png')
@@ -986,14 +1001,13 @@ main.win = function(){};
 
 main.win.prototype = {
     preload: function() {
-        // game.load.image('death', 'assets/death.png'); 
-        // MAKE A WIN IMAGE
+        game.load.image('win', 'assets/win.png');
     },
 
     create: function() {
         game.add.tileSprite(0, 0, game.width, game.height, 'sprites', 'mars.png')
 
-        // game.add.image(game.width-550, game.height-500, 'death')
+        game.add.image(game.width-780, game.height-220, 'win')
 
         textOne = game.add.text(0, game.height/3-128, "You Win", {
             fontSize: 128,
@@ -1012,6 +1026,41 @@ main.win.prototype = {
         if (space.isDown) {
             game.wave = 0;
             game.nextWave();
+        }
+    }
+}
+
+main.waveTransition = function(){}; 
+
+main.waveTransition.prototype = {
+    preload: function() {},
+
+    create: function() {
+        game.add.tileSprite(0, 0, game.width, game.height, 'sprites', 'mars.png')
+
+        // game.add.image(game.width-550, game.height-500, 'death')
+
+        textOne = game.add.text(0, game.height/3-128, "Wave "+(game.wave+1).toString(), {
+            fontSize: 128,
+            boundsAlignH: 'center'});
+        textOne.setTextBounds(0, 0, game.width, game.height);
+
+        textTwo = game.add.text(0, game.height/3+36, main.randomTip(), {
+            fontSize: 36,
+            boundsAlignH: 'center'});
+        textTwo.setTextBounds(0, 0, game.width, game.height)
+
+        textThree = game.add.text(0, (game.height/4)*3+30, "press space to start", {
+            fontSize: 36,
+            boundsAlignH: 'center'});
+        textThree.setTextBounds(0, 0, game.width, game.height)
+
+        space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    },
+
+    update: function() {
+        if (space.isDown) {
+            game.playNextWave();
         }
     }
 }
@@ -1051,15 +1100,10 @@ main.menu.prototype = {
             boundsAlignH: 'center'});
         textFour.setTextBounds(0, 0, game.width, game.height)
 
-        textFive = game.add.text(0, game.height/2+100, "try to beat all four waves", {
+        textFive = game.add.text(0, (game.height/4)*3+30, "press space to play", {
             fontSize: 36,
             boundsAlignH: 'center'});
         textFive.setTextBounds(0, 0, game.width, game.height)
-
-        textSix = game.add.text(0, (game.height/4)*3+30, "press space to play", {
-            fontSize: 36,
-            boundsAlignH: 'center'});
-        textSix.setTextBounds(0, 0, game.width, game.height)
 
         space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     },
@@ -1073,6 +1117,7 @@ main.menu.prototype = {
 }
 
 game.state.add('Lose', main.losescreen);
+game.state.add('WaveTransition', main.waveTransition);
 game.state.add('Win', main.win);
 game.state.add('Menu', main.menu);
 game.state.start('Menu');
