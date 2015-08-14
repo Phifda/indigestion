@@ -766,9 +766,9 @@ main.waves[3].prototype = {
         blood.forEachDead(main.remove, this);
         aliens.forEach(main.updateAlienCar, this);
 
-        // if (aliens.total == 0) {
-        //     game.nextWave();
-        // }
+        if (aliens.total == 0) {
+            game.nextWave();
+        }
     }
 }
 
@@ -1040,7 +1040,7 @@ main.waveTransition.prototype = {
 
         // game.add.image(game.width-550, game.height-500, 'death')
 
-        textOne = game.add.text(0, game.height/3-128, "Wave "+(game.wave+1).toString(), {
+        textOne = game.add.text(0, game.height/3-128, "Wave "+(game.wave+1).toString()+" of 4", {
             fontSize: 128,
             boundsAlignH: 'center'});
         textOne.setTextBounds(0, 0, game.width, game.height);

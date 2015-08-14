@@ -8,8 +8,5 @@ tips = [
 	"the car moves faster when it gets hurt",
 	"the car moves faster when it gets hurt",
 	"shoot the aliens at the ends of the beam",
-	"there are four waves",
-	"there are four waves",
-	"there are four waves",
 	"you need at least 3 damage to kill a chicken",
 ]
